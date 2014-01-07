@@ -13,7 +13,7 @@ class plgSystemKunena_MemberMap extends JPlugin
 {
     private $js = '//maps.googleapis.com/maps/api/js?sensor=false';
 
-    private $search = '{kunena_membermap}';
+    private $search = array('{kunena_membermap}', '{kunena_member_map}');
 
     private $load = false;
 
@@ -49,7 +49,7 @@ class plgSystemKunena_MemberMap extends JPlugin
             ->from('#__kunena_users AS ku')
             ->join('INNER', '#__users AS u ON(u.id = ku.userid)')
             ->where('u.block = 0')
-            ->where('ku.location IS NOT NULL');
+            ->where('ku.location != ' . $db->quote(''));
 
         $db->setQuery($query);
 
