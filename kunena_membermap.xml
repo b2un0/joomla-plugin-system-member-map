@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" type="plugin" group="system" method="upgrade">
+    <name>System - Kunena Member Map</name>
+    <author>Branko Wilhelm</author>
+    <creationDate>Jan 2014</creationDate>
+    <copyright>Copyright (C) 2014 Branko Wilhelm. All rights reserved.</copyright>
+    <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
+    <authorEmail>branko.wilhelm@gmail.com</authorEmail>
+    <authorUrl>www.z-index.net</authorUrl>
+    <version>@REVISION@</version>
+    <description>Kunena Member Map</description>
+    <files>
+        <filename plugin="kunena_membermap">kunena_membermap.php</filename>
+    </files>
+    <media folder="media" destination="kunena_membermap">
+        <filename>membermap.js</filename>
+    </media>
+    <updateservers>
+        <server type="collection" priority="1" name="z-index development">http://www.z-index.net/en/extensions.xml</server>
+    </updateservers>
+    <!-- <config>
+         <fields name="params">
+             <fieldset name="basic">
+                 <field name="key" type="text" default="" label="API Key" description="optional" />
+                 <field name="centring" type="radio" class="btn-group" default="auto" label="centring" description="">
+                     <option value="auto">auto</option>
+                     <option value="viewer">viewer</option>
+                 </field
+            </fieldset>
+        </fields>
+    </config>>-->
+</extension>
