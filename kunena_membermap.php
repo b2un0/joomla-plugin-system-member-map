@@ -7,14 +7,12 @@
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 class plgSystemKunena_MemberMap extends JPlugin
 {
     private $js = '//maps.googleapis.com/maps/api/js?sensor=false';
-
-    private $search = array('{kunena_membermap}', '{kunena_member_map}');
-
+    private $search = '{kunena_membermap}';
     private $load = false;
 
     public function onContentPrepare($context, &$row, &$params, $page = 0)
@@ -24,25 +22,27 @@ class plgSystemKunena_MemberMap extends JPlugin
         }
 
         if ($this->load == true) {
-            $replace = __CLASS__ . ': only one instance per site allowed';
+            $replace = JText::_('PLG_SYSTEM_KUNENA_MEMBERMAP_ONLY_ONE_INSTANCE');
         } else {
             $replace = $this->initMap();
         }
 
-        $row->text = JString::str_ireplace($this->search, '<div id="membermap"></div>', $row->text);
+        $row->text = JString::str_ireplace($this->search, $replace, $row->text);
 
         $this->load = true;
     }
 
     protected function initMap()
     {
-        $app = JFactory::getApplication();
         $db = JFactory::getDbo();
         $doc = JFactory::getDocument();
 
+        if ($this->params->get('key')) {
+            $this->js .= '&amp;key=' . $this->params->get('key');
+        }
+
         $doc->addScript($this->js);
         $doc->addScript('media/kunena_membermap/membermap.js');
-        $doc->addStyleSheet('media/kunena_membermap/membermap.css');
 
         $query = $db->getQuery(true)
             ->select('u.id')
@@ -59,25 +59,46 @@ class plgSystemKunena_MemberMap extends JPlugin
             return JText::_('PLG_SYSTEM_KUNENA_MEMBERMAP_NO_USER_LOCATIONS');
         }
 
-        foreach ($members as &$member) {
+        foreach ($members as $key => &$member) {
             $member = KunenaFactory::getUser($member);
-            $json[$member->userid] = new stdClass;
-            $json[$member->userid]->name = $member->getName();
-            $json[$member->userid]->address = $member->location;
-            $json[$member->userid]->avatar = $member->getAvatarURL();
-            $json[$member->userid]->url = $member->getURL();
+            $users[$member->userid] = new stdClass;
+            $users[$member->userid]->name = $member->getName();
+            $users[$member->userid]->address = $member->location;
+            $users[$member->userid]->avatar = $member->getAvatarURL();
+            $users[$member->userid]->url = $member->getURL();
+            $users[$member->userid]->requests = 0;
+            $users[$member->userid]->ready = false;
 
-            if (!filter_var($json[$member->userid]->avatar, FILTER_VALIDATE_URL)) {
-                $json[$member->userid]->avatar = JUri::root() . $json[$member->userid]->avatar;
+            if (!filter_var($users[$member->userid]->avatar, FILTER_VALIDATE_URL)) {
+                $users[$member->userid]->avatar = JUri::root() . $users[$member->userid]->avatar;
             }
         }
 
-        $doc->addScriptDeclaration('window.membermap.users = ' . json_encode($json) . ';');
+        $js[] = 'window.membermap.users = ' . json_encode($users);
+
+        $config = new stdClass;
+        $config->center = $this->params->get('center', 1) ? true : false;
+        $config->bounce = $this->params->get('bounce', 1) ? true : false;
+        $config->drop = $this->params->get('drop', 1) ? true : false;
+        $config->delay = (int)$this->params->get('delay', 750);
+        $config->width = $this->params->get('width', '100%');
+        $config->height = (int)$this->params->get('height', 500);
+        $config->type = strtoupper($this->params->get('type', 'ROADMAP'));
+        $config->zoom = (int)$this->params->get('zoom', 1);
+        $config->lat = (float)$this->params->get('lat', 42);
+        $config->lng = (float)$this->params->get('lng', 11);
+        $config->requests = (int)$this->params->get('requests', 3);
+        $config->size = (int)$this->params->get('size', 30);
+
+        $js[] = 'window.membermap.config = ' . json_encode($config);
+
+        $doc->addScriptDeclaration(implode(';', $js));
+
+        return '<div id="membermap"></div>';
     }
 
-    /**
-     * replace on index.php?option=com_kunena&view=user&userid=
-     */
+    // TODO
+
     public function onAfterRoute()
     {
         $app = JFactory::getApplication();
