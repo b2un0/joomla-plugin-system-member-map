@@ -27,6 +27,7 @@ window.membermap.fn.initialize = function () {
     window.membermap.google.map = new google.maps.Map(document.getElementById('membermap'), window.membermap.google.options);
     window.membermap.google.geocoder = new google.maps.Geocoder();
     window.membermap.google.bounds = new google.maps.LatLngBounds();
+    window.membermap.google.cluster = new MarkerClusterer(window.membermap.google.map);
 
     google.maps.event.addListenerOnce(window.membermap.google.map, 'idle', window.membermap.fn.geocode);
 
@@ -60,7 +61,7 @@ window.membermap.fn.marker = function (user) {
         title: window.membermap.users[user].name,
         position: window.membermap.users[user].position,
         animation: window.membermap.config.drop ? google.maps.Animation.DROP : null,
-        map: window.membermap.google.map,
+        //map: window.membermap.google.map,
         icon: new google.maps.MarkerImage(window.membermap.users[user].avatar, null, null, null, new google.maps.Size(window.membermap.config.size, window.membermap.config.size))
     });
 
@@ -80,6 +81,8 @@ window.membermap.fn.marker = function (user) {
             this.setAnimation(null);
         }
     });
+
+    window.membermap.google.cluster.addMarker(window.membermap.users[user].marker);
 
     window.membermap.geocoded++;
 

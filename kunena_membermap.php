@@ -42,6 +42,7 @@ class plgSystemKunena_MemberMap extends JPlugin
         }
 
         $doc->addScript($this->js);
+        $doc->addScript('//google-maps-utility-library-v3.googlecode.com/svn/tags/markerclusterer/1.0.2/src/markerclusterer_compiled.js');
         $doc->addScript('media/kunena_membermap/membermap.js');
 
         $query = $db->getQuery(true)
