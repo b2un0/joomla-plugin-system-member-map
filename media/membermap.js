@@ -27,7 +27,10 @@ window.membermap.fn.initialize = function () {
     window.membermap.google.map = new google.maps.Map(document.getElementById('membermap'), window.membermap.google.options);
     window.membermap.google.geocoder = new google.maps.Geocoder();
     window.membermap.google.bounds = new google.maps.LatLngBounds();
-    window.membermap.google.cluster = new MarkerClusterer(window.membermap.google.map);
+
+    if (window.membermap.config.cluster) {
+        window.membermap.google.cluster = new MarkerClusterer(window.membermap.google.map);
+    }
 
     google.maps.event.addListenerOnce(window.membermap.google.map, 'idle', window.membermap.fn.geocode);
 
@@ -60,9 +63,7 @@ window.membermap.fn.marker = function (user) {
     window.membermap.users[user].marker = new google.maps.Marker({
         title: window.membermap.users[user].name,
         position: window.membermap.users[user].position,
-        animation: window.membermap.config.drop ? google.maps.Animation.DROP : null,
-        //map: window.membermap.google.map,
-        icon: new google.maps.MarkerImage(window.membermap.users[user].avatar, null, null, null, new google.maps.Size(window.membermap.config.size, window.membermap.config.size))
+        animation: window.membermap.config.drop ? google.maps.Animation.DROP : null
     });
 
     google.maps.event.addListener(window.membermap.users[user].marker, 'click', function () {
@@ -82,7 +83,15 @@ window.membermap.fn.marker = function (user) {
         }
     });
 
-    window.membermap.google.cluster.addMarker(window.membermap.users[user].marker);
+    if (window.membermap.users[user].avatar) {
+        window.membermap.users[user].marker.setIcon(new google.maps.MarkerImage(window.membermap.users[user].avatar, null, null, null, new google.maps.Size(window.membermap.config.size, window.membermap.config.size)));
+    }
+
+    if (window.membermap.config.cluster) {
+        window.membermap.google.cluster.addMarker(window.membermap.users[user].marker);
+    } else {
+        window.membermap.users[user].marker.setMap(window.membermap.google.map);
+    }
 
     window.membermap.geocoded++;
 

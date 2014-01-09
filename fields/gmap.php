@@ -15,16 +15,16 @@ class JFormFieldGMap extends JFormField
 
     protected function getInput()
     {
-        $plugin = JPluginHelper::getPlugin('system', 'kunena_membermap');
-        $plugin->params = $params = new JRegistry($plugin->params);
+        $plugin = JPluginHelper::getPlugin('system', 'membermap');
+        $params = new JRegistry(!empty($plugin) ? $plugin->params : null);
 
         $doc = JFactory::getDocument();
         $doc->addScript('//maps.google.com/maps/api/js?sensor=false');
 
-        $type = strtoupper($plugin->params->get('type', 'ROADMAP'));
-        $zoom = $plugin->params->get('zoom', 1);
-        $lat = $plugin->params->get('lat', 42);
-        $lng = $plugin->params->get('lng', 11);
+        $type = strtoupper($params->get('type', 'ROADMAP'));
+        $zoom = $params->get('zoom', 1);
+        $lat = $params->get('lat', 42);
+        $lng = $params->get('lng', 11);
 
         $onload = <<<EOL
 			window.membermap = {};
