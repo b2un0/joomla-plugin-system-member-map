@@ -87,6 +87,7 @@ class plgSystemMemberMap extends JPlugin
         JFactory::getApplication()->enqueueMessage($msg, $type);
     }
 
+    // TODO
     protected function onAfterRoute()
     {
         $app = JFactory::getApplication();
@@ -116,6 +117,30 @@ class plgSystemMemberMap extends JPlugin
             $query->where('g.group_id IN(' . implode(',', $usergroups) . ')');
         }
 
+        switch ($this->params->get('order', 'name')) {
+            default:
+            case 'name';
+                $query->order('u.name');
+                break;
+
+            case 'username':
+                $query->order('u.username');
+
+                break;
+
+            case 'userid':
+                $query->order('u.id');
+                break;
+
+            case 'location':
+                $query->order('ku.location');
+                break;
+
+            case 'random':
+                $query->order('RAND()');
+                break;
+        }
+
         $db->setQuery($query);
 
         $members = $db->loadColumn();
@@ -124,19 +149,19 @@ class plgSystemMemberMap extends JPlugin
             return null;
         }
 
-        foreach ($members as &$member) {
+        foreach ($members as $key => &$member) {
             $member = KunenaFactory::getUser($member);
-            $users[$member->userid] = new stdClass;
-            $users[$member->userid]->name = $member->getName();
-            $users[$member->userid]->address = $member->location;
-            $users[$member->userid]->url = $member->getURL();
-            $users[$member->userid]->requests = 0;
-            $users[$member->userid]->ready = false;
+            $users[$key] = new stdClass;
+            $users[$key]->name = $member->getName();
+            $users[$key]->address = $member->location;
+            $users[$key]->url = $member->getURL();
+            $users[$key]->requests = 0;
+            $users[$key]->ready = false;
 
             if ($this->params->get('avatar', 1)) {
-                $users[$member->userid]->avatar = $member->getAvatarURL(); // TODO
-                if (!filter_var($users[$member->userid]->avatar, FILTER_VALIDATE_URL)) {
-                    $users[$member->userid]->avatar = JUri::root() . $users[$member->userid]->avatar;
+                $users[$key]->avatar = $member->getAvatarURL(); // TODO
+                if (!filter_var($users[$key]->avatar, FILTER_VALIDATE_URL)) {
+                    $users[$key]->avatar = JUri::root() . $users[$key]->avatar;
                 }
             }
         }

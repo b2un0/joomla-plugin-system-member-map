@@ -41,7 +41,7 @@ window.membermap.fn.initialize = function () {
 
 window.membermap.fn.markers = function () {
     var finished = true;
-    for (user in window.membermap.users) {
+    for (var user = 0; user < window.membermap.users.length; user++) {
         if (!window.membermap.users[user].placed && window.membermap.users[user].ready) {
             window.membermap.users[user].placed = true;
             window.membermap.fn.marker(user);
@@ -103,7 +103,7 @@ window.membermap.fn.marker = function (user) {
 }
 
 window.membermap.fn.geocode = function () {
-    for (user in window.membermap.users) {
+    for (var user = 0; user < window.membermap.users.length; user++) {
         if (!window.membermap.users[user].ready) {
             window.membermap.users[user].requests++;
             window.membermap.google.geocoder.geocode({'address': window.membermap.users[user].address}, function (user) {

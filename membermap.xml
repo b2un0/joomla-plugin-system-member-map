@@ -33,7 +33,14 @@
                     <option value="kunena">PLG_SYSTEM_MEMBERMAP_SOURCE_KUNENA</option>
                     <!--<option value="contact">PLG_SYSTEM_MEMBERMAP_SOURCE_CONTACT</option>-->
                 </field>
-                <field name="usergroup" type="usergroup" multiple="true" size="3" default="" label="PLG_SYSTEM_MEMBERMAP_USERGROUP_LABEL" description="PLG_SYSTEM_MEMBERMAP_USERGROUP_LABEL" />
+                <field name="usergroup" type="usergroup" multiple="true" size="3" default="" label="PLG_SYSTEM_MEMBERMAP_USERGROUP_LABEL" description="PLG_SYSTEM_MEMBERMAP_USERGROUP_DESC" />
+                <field name="order" type="list" default="name" required="true" label="PLG_SYSTEM_MEMBERMAP_ORDER_LABEL" description="PLG_SYSTEM_MEMBERMAP_ORDER_DESC">
+                    <option value="name">PLG_SYSTEM_MEMBERMAP_ORDER_NAME</option>
+                    <option value="username">PLG_SYSTEM_MEMBERMAP_ORDER_USERNAME</option>
+                    <option value="userid">PLG_SYSTEM_MEMBERMAP_ORDER_USERID</option>
+                    <option value="location">PLG_SYSTEM_MEMBERMAP_ORDER_LOCATION</option>
+                    <option value="random">PLG_SYSTEM_MEMBERMAP_ORDER_RANDOM</option>
+                </field>
                 <field name="avatar" type="radio" class="btn-group" default="1" required="true" label="PLG_SYSTEM_MEMBERMAP_AVATAR_LABEL" description="PLG_SYSTEM_MEMBERMAP_AVATAR_DESC">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
@@ -41,7 +48,7 @@
                 <field name="size" type="text" default="30" filter="integer" required="true" label="PLG_SYSTEM_MEMBERMAP_SIZE_LABEL" description="PLG_SYSTEM_MEMBERMAP_SIZE_DESC" />
                 <field name="center" type="text" filter="integer" default="2" required="true" label="PLG_SYSTEM_MEMBERMAP_CENTER_LABEL" description="PLG_SYSTEM_MEMBERMAP_CENTER_DESC" />
                 <field name="bounce" type="radio" class="btn-group" default="0" required="true" label="PLG_SYSTEM_MEMBERMAP_BOUNCE_LABEL" description="PLG_SYSTEM_MEMBERMAP_BOUNCE_DESC">
-                <option value="1">JYES</option>
+                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
                 <field name="drop" type="radio" class="btn-group" default="1" required="true" label="PLG_SYSTEM_MEMBERMAP_DROP_LABEL" description="PLG_SYSTEM_MEMBERMAP_DROP_DESC">
