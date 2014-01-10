@@ -33,7 +33,7 @@
                     <option value="kunena">PLG_SYSTEM_MEMBERMAP_SOURCE_KUNENA</option>
                     <!--<option value="contact">PLG_SYSTEM_MEMBERMAP_SOURCE_CONTACT</option>-->
                 </field>
-                <field name="usergroup" type="usergrouplist" multiple="true" size="3" default="" label="PLG_SYSTEM_MEMBERMAP_USERGROUP_LABEL" description="PLG_SYSTEM_MEMBERMAP_USERGROUP_LABEL" />
+                <field name="usergroup" type="usergroup" multiple="true" size="3" default="" label="PLG_SYSTEM_MEMBERMAP_USERGROUP_LABEL" description="PLG_SYSTEM_MEMBERMAP_USERGROUP_LABEL" />
                 <field name="avatar" type="radio" class="btn-group" default="1" required="true" label="PLG_SYSTEM_MEMBERMAP_AVATAR_LABEL" description="PLG_SYSTEM_MEMBERMAP_AVATAR_DESC">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
