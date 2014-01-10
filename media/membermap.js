@@ -97,7 +97,7 @@ window.membermap.fn.marker = function (user) {
 
     window.membermap.google.bounds.extend(window.membermap.users[user].position);
 
-    if (window.membermap.config.center && window.membermap.geocoded >= 2) {
+    if (window.membermap.geocoded >= window.membermap.config.center) {
         window.membermap.google.map.fitBounds(window.membermap.google.bounds);
     }
 }

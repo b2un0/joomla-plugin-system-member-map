@@ -62,7 +62,7 @@ class plgSystemMemberMap extends JPlugin
         $js[] = 'window.membermap.users = ' . json_encode($users);
 
         $config = new stdClass;
-        $config->center = $this->params->get('center', 1) ? true : false;
+        $config->center = (int)$this->params->get('center', 2);
         $config->bounce = $this->params->get('bounce', 1) ? true : false;
         $config->drop = $this->params->get('drop', 1) ? true : false;
         $config->delay = (int)$this->params->get('delay', 750);
@@ -110,6 +110,11 @@ class plgSystemMemberMap extends JPlugin
             ->join('INNER', '#__users AS u ON(u.id = ku.userid)')
             ->where('u.block = 0')
             ->where('ku.location != ' . $db->quote(''));
+
+        if ($usergroups = $this->params->get('usergroup')) {
+            $query->join('INNER', '#__user_usergroup_map AS g ON(u.id = g.user_id)');
+            $query->where('g.group_id IN(' . implode(',', $usergroups) . ')');
+        }
 
         $db->setQuery($query);
 
