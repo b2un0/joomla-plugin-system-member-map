@@ -12,6 +12,23 @@ defined('_JEXEC') or die;
 class plgSystemMemberMap extends JPlugin
 {
     protected $loaded = false;
+    protected $adapter = null;
+
+    public function __construct(&$subject, $config = array())
+    {
+        parent::__construct($subject, $config);
+
+        $this->loadLanguage();
+
+        JLoader::discover('MemberMapAdapter', dirname(__FILE__) . '/adapters/');
+
+        $class = 'MemberMapAdapter' . $this->params->get('source');
+        if (class_exists($class)) {
+            $this->adapter = new $class($this->params);
+        } else {
+            return JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_MEMBERMAP_SOURCE_NOT_AVAILABLE', $this->params->get('source')), 'error');
+        }
+    }
 
     public function onContentPrepare($context, &$row, &$params, $page = 0)
     {
@@ -19,10 +36,12 @@ class plgSystemMemberMap extends JPlugin
             return true;
         }
 
-        $this->loadLanguage();
+        if (!($this->adapter instanceof MemberMapAdapterInterface)) {
+            return JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_MEMBERMAP_SOURCE_NOT_AVAILABLE', $this->params->get('source')), 'error');
+        }
 
         if ($this->loaded == true) {
-            JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_MEMBERMAP_ONLY_ONE_INSTANCE'), 'error');
+            return JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_MEMBERMAP_ONLY_ONE_INSTANCE'), 'error');
         } else {
             $this->initMap();
             $this->loaded = true;
@@ -33,16 +52,10 @@ class plgSystemMemberMap extends JPlugin
 
     protected function initMap()
     {
-        $method = 'getUsers' . $this->params->get('source');
-
-        if (!method_exists($this, $method)) {
-            return $this->message(JText::_('PLG_SYSTEM_MEMBERMAP_NO_SOURCE'), 'warning');
-        }
-
-        $users = call_user_func(array($this, $method));
+        $users = $this->adapter->getUsers();
 
         if (empty($users)) {
-            return $this->message(JText::_('PLG_SYSTEM_MEMBERMAP_NO_USERS'), 'warning');
+            return JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_MEMBERMAP_NO_USERS'), 'warning');
         }
 
         $doc = JFactory::getDocument();
@@ -81,91 +94,8 @@ class plgSystemMemberMap extends JPlugin
         $doc->addScriptDeclaration(implode(';', $js));
     }
 
-    private function message($msg, $type = 'message')
+    public function onAfterRoute()
     {
-        $msg = JText::_('PLG_SYSTEM_MEMBERMAP_NAME') . ': ' . $msg;
-        JFactory::getApplication()->enqueueMessage($msg, $type);
-    }
-
-    // TODO
-    protected function onAfterRoute()
-    {
-        $app = JFactory::getApplication();
-        $input = $app->input;
-
-        if ($input->getCmd('option') == 'com_kunena' && $input->getCmd('view') == 'user') {
-            // jquery '#kprofile a[href*="maps.google.com"]'
-        }
-    }
-
-    private function getUsersKunena()
-    {
-        if (!JComponentHelper::isEnabled('com_kunena')) {
-            return $this->message(JText::sprintf('PLG_SYSTEM_MEMBERMAP_SOURCE_NOT_AVAILABLE', 'Kunena'), 'error');
-        }
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true)
-            ->select('u.id')
-            ->from('#__kunena_users AS ku')
-            ->join('INNER', '#__users AS u ON(u.id = ku.userid)')
-            ->where('u.block = 0')
-            ->where('ku.location != ' . $db->quote(''));
-
-        if ($usergroups = $this->params->get('usergroup')) {
-            $query->join('INNER', '#__user_usergroup_map AS g ON(u.id = g.user_id)');
-            $query->where('g.group_id IN(' . implode(',', $usergroups) . ')');
-        }
-
-        switch ($this->params->get('order', 'name')) {
-            default:
-            case 'name';
-                $query->order('u.name');
-                break;
-
-            case 'username':
-                $query->order('u.username');
-
-                break;
-
-            case 'userid':
-                $query->order('u.id');
-                break;
-
-            case 'location':
-                $query->order('ku.location');
-                break;
-
-            case 'random':
-                $query->order('RAND()');
-                break;
-        }
-
-        $db->setQuery($query);
-
-        $members = $db->loadColumn();
-
-        if (empty($members)) {
-            return null;
-        }
-
-        foreach ($members as $key => &$member) {
-            $member = KunenaFactory::getUser($member);
-            $users[$key] = new stdClass;
-            $users[$key]->name = $member->getName();
-            $users[$key]->address = $member->location;
-            $users[$key]->url = $member->getURL();
-            $users[$key]->requests = 0;
-            $users[$key]->ready = false;
-
-            if ($this->params->get('avatar', 1)) {
-                $users[$key]->avatar = $member->getAvatarURL(); // TODO
-                if (!filter_var($users[$key]->avatar, FILTER_VALIDATE_URL)) {
-                    $users[$key]->avatar = JUri::root() . $users[$key]->avatar;
-                }
-            }
-        }
-
-        return $users;
+        $this->adapter->onAfterRoute();
     }
 }

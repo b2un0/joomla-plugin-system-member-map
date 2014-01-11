@@ -11,6 +11,7 @@
     <description>PLG_SYSTEM_MEMBERMAP_DESCRIPTION</description>
     <files>
         <filename plugin="membermap">membermap.php</filename>
+        <folder>adapters</folder>
         <folder>fields</folder>
     </files>
     <media folder="media" destination="membermap">
