@@ -30,6 +30,26 @@ window.membermap.fn.initialize = function () {
 
     if (window.membermap.config.cluster) {
         window.membermap.google.cluster = new MarkerClusterer(window.membermap.google.map);
+        google.maps.event.addListener(window.membermap.google.cluster, 'clusterclick', function (cluster) {
+            // check zoom level
+            var zoomLevel = window.membermap.google.map.getZoom();
+            var markers = cluster.getMarkers();
+            console.log(markers);
+            if (zoomLevel >= 10) {
+                for (i in markers) {
+                    // set the the map to be "the map"
+                    markers[i].setMap(window.membermap.google.map);
+                }
+            } else {
+                for (i in markers) {
+                    // set the the map to be "the map"
+                    //markers[i].setMap(null);
+                }
+
+                //window.membermap.google.map.setZoom(++zoomLevel);
+            }
+
+        });
     }
 
     google.maps.event.addListenerOnce(window.membermap.google.map, 'idle', window.membermap.fn.geocode);

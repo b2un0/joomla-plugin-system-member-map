@@ -23,7 +23,7 @@ class plgSystemMemberMap extends JPlugin
         JLoader::discover('MemberMapAdapter', dirname(__FILE__) . '/adapters/');
 
         $class = 'MemberMapAdapter' . $this->params->get('source');
-        if (class_exists($class)) {
+        if (class_exists($class)) { // TODO not really needed?
             $this->adapter = new $class($this->params);
         } else {
             return JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_MEMBERMAP_SOURCE_NOT_AVAILABLE', $this->params->get('source')), 'error');

@@ -58,6 +58,7 @@ EOL;
 
         $doc->addScriptDeclaration($onload);
 
+        // TODO fix für Joomla 2.5
         return '<div id="gmap" style="width:400px;height:300px;"></div>';
     }
 }
