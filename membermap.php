@@ -9,26 +9,10 @@
 
 defined('_JEXEC') or die;
 
-class plgSystemMemberMap extends JPlugin
+class plgContentMemberMap extends JPlugin
 {
     protected $loaded = false;
     protected $adapter = null;
-
-    public function __construct(&$subject, $config = array())
-    {
-        parent::__construct($subject, $config);
-
-        $this->loadLanguage();
-
-        JLoader::discover('MemberMapAdapter', dirname(__FILE__) . '/adapters/');
-
-        $class = 'MemberMapAdapter' . $this->params->get('source');
-        if (class_exists($class)) { // TODO not really needed?
-            $this->adapter = new $class($this->params);
-        } else {
-            return JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_MEMBERMAP_SOURCE_NOT_AVAILABLE', $this->params->get('source')), 'error');
-        }
-    }
 
     public function onContentPrepare($context, &$row, &$params, $page = 0)
     {
@@ -36,12 +20,22 @@ class plgSystemMemberMap extends JPlugin
             return true;
         }
 
-        if (!($this->adapter instanceof MemberMapAdapterInterface)) {
-            return JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_MEMBERMAP_SOURCE_NOT_AVAILABLE', $this->params->get('source')), 'error');
+        $this->loadLanguage();
+
+        JLoader::discover('MemberMapAdapter', dirname(__FILE__) . '/adapters/');
+
+        $class = 'MemberMapAdapter' . $this->params->get('source');
+
+        if (class_exists($class)) { // TODO not really needed?
+            $this->adapter = new $class($this->params);
+        } else {
+            JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_CONTENT_MEMBERMAP_SOURCE_NOT_AVAILABLE', $this->params->get('source')), 'error');
+            return true;
         }
 
         if ($this->loaded == true) {
-            return JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_MEMBERMAP_ONLY_ONE_INSTANCE'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('PLG_CONTENT_MEMBERMAP_ONLY_ONE_INSTANCE'), 'error');
+            return true;
         } else {
             $this->initMap();
             $this->loaded = true;
@@ -55,18 +49,23 @@ class plgSystemMemberMap extends JPlugin
         $users = $this->adapter->getUsers();
 
         if (empty($users)) {
-            return JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_MEMBERMAP_NO_USERS'), 'warning');
+            JFactory::getApplication()->enqueueMessage(JText::_('PLG_CONTENT_MEMBERMAP_NO_USERS'), 'warning');
+            return false;
         }
 
         $doc = JFactory::getDocument();
 
+        $query['sensor'] = $this->params->get('sensor') ? 'true' : 'false';
+
         if ($this->params->get('key')) {
-            $this->js .= '&amp;key=' . $this->params->get('key');
+            $query['key'] = $this->params->get('key');
         }
 
-        $doc->addScript('//maps.googleapis.com/maps/api/js?sensor=false');
+        $query = http_build_query($query);
 
-        if ($this->params->get('cluster', 1)) {
+        $doc->addScript('//maps.googleapis.com/maps/api/js?' . $query);
+
+        if ($this->params->get('cluster')) {
             $doc->addScript('//google-maps-utility-library-v3.googlecode.com/svn/tags/markerclusterer/1.0.2/src/markerclusterer_compiled.js');
         }
 
@@ -92,10 +91,5 @@ class plgSystemMemberMap extends JPlugin
         $js[] = 'window.membermap.config = ' . json_encode($config);
 
         $doc->addScriptDeclaration(implode(';', $js));
-    }
-
-    public function onAfterRoute()
-    {
-        $this->adapter->onAfterRoute();
     }
 }

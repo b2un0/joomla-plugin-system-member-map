@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 
 final class MemberMapAdapterKunena implements MemberMapAdapterInterface
 {
-
     protected $params;
 
     public function __construct(JRegistry &$params)
@@ -22,7 +21,8 @@ final class MemberMapAdapterKunena implements MemberMapAdapterInterface
     public function getUsers()
     {
         if (!JComponentHelper::isEnabled('com_kunena')) {
-            return JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_MEMBERMAP_SOURCE_NOT_AVAILABLE', 'Kunena'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_CONTENT_MEMBERMAP_SOURCE_NOT_ENABLED', 'Kunena'), 'error');
+            return false;
         }
 
         $db = JFactory::getDbo();
@@ -90,17 +90,4 @@ final class MemberMapAdapterKunena implements MemberMapAdapterInterface
 
         return $users;
     }
-
-    // TODO
-
-    public function onAfterRoute()
-    {
-        $app = JFactory::getApplication();
-        $input = $app->input;
-
-        if ($input->getCmd('option') == 'com_kunena' && $input->getCmd('view') == 'user') {
-            // jQuery('#kprofile a[href*="maps.google.com"]').attr('href', '/*TODO*/');
-        }
-    }
-
 }

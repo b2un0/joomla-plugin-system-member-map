@@ -15,7 +15,7 @@ class JFormFieldGMap extends JFormField
 
     protected function getInput()
     {
-        $plugin = JPluginHelper::getPlugin('system', 'membermap');
+        $plugin = JPluginHelper::getPlugin('content', 'membermap');
         $params = new JRegistry(!empty($plugin) ? $plugin->params : null);
 
         $doc = JFactory::getDocument();
@@ -58,7 +58,7 @@ EOL;
 
         $doc->addScriptDeclaration($onload);
 
-        // TODO fix für Joomla 2.5
+        // TODO add css fix for Joomla 2.5
         return '<div id="gmap" style="width:400px;height:300px;"></div>';
     }
 }

@@ -11,11 +11,7 @@ defined('_JEXEC') or die;
 
 interface MemberMapAdapterInterface
 {
-
     public function __construct(JRegistry &$params);
 
     public function getUsers();
-
-    public function onAfterRoute();
-
 }
