@@ -60,6 +60,10 @@ window.membermap.fn.markers = function () {
 }
 
 window.membermap.fn.marker = function (user) {
+    if (typeof window.membermap.users[user].position == 'undefined') {
+        return;
+    }
+
     window.membermap.users[user].marker = new google.maps.Marker({
         title: window.membermap.users[user].name,
         position: window.membermap.users[user].position,
