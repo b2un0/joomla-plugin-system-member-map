@@ -27,7 +27,7 @@ final class MemberMapAdapterKunena implements MemberMapAdapterInterface
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true)
-            ->select('u.id')
+            ->select('DISTINCT u.id')
             ->from('#__kunena_users AS ku')
             ->join('INNER', '#__users AS u ON(u.id = ku.userid)')
             ->where('u.block = 0')
