@@ -72,15 +72,6 @@ window.membermap.fn.marker = function (user) {
 
     google.maps.event.addListener(window.membermap.users[user].marker, 'mouseover', function () {
         this.setZIndex(1000);
-        if (window.membermap.config.bounce) {
-            this.setAnimation(google.maps.Animation.BOUNCE);
-        }
-    });
-
-    google.maps.event.addListener(window.membermap.users[user].marker, 'mouseout', function () {
-        if (window.membermap.config.bounce) {
-            this.setAnimation(null);
-        }
     });
 
     if (window.membermap.users[user].avatar) {
@@ -131,6 +122,7 @@ window.membermap.fn.legend = function (user) {
     google.maps.event.addDomListener(row, 'click', function () {
         var position = window.membermap.users[user].marker.getPosition();
         window.membermap.google.map.panTo(position);
+        window.membermap.google.map.setZoom(10);
     });
 
     document.getElementById('membermap_legend').appendChild(row);

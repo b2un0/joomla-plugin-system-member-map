@@ -81,7 +81,6 @@ class plgContentMemberMap extends JPlugin
 
         $config = new stdClass;
         $config->center = (int)$this->params->get('center', 2);
-        $config->bounce = $this->params->get('bounce', 1) ? true : false;
         $config->legend = $this->params->get('legend', 1) ? true : false;
         $config->drop = $this->params->get('drop', 1) ? true : false;
         $config->delay = (int)$this->params->get('delay', 750);
