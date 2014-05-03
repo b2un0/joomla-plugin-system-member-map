@@ -1,0 +1,23 @@
+#membermap_legend {
+    overflow-x: auto;
+    right: 5px !important;
+    bottom: 20px !important;
+}
+
+#membermap_legend div {
+    cursor: pointer;
+    overflow: hidden;
+    text-align: center;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.14902);
+    box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px;
+    background-color: rgb(255, 255, 255);
+    background-clip: padding-box;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

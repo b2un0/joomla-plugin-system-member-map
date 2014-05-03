@@ -87,6 +87,10 @@ window.membermap.fn.marker = function (user) {
         window.membermap.users[user].marker.setIcon(new google.maps.MarkerImage(window.membermap.users[user].avatar, null, null, null, new google.maps.Size(window.membermap.config.size, window.membermap.config.size)));
     }
 
+    if (window.membermap.config.legend) {
+        window.membermap.fn.legend(user);
+    }
+
     if (window.membermap.config.cluster) {
         window.membermap.google.cluster.addMarker(window.membermap.users[user].marker);
     } else {
@@ -100,6 +104,36 @@ window.membermap.fn.marker = function (user) {
     if (window.membermap.geocoded >= window.membermap.config.center) {
         window.membermap.google.map.fitBounds(window.membermap.google.bounds);
     }
+}
+
+window.membermap.fn.legend = function (user) {
+    if (!window.membermap.legend) {
+        window.membermap.legend = document.createElement('div');
+        window.membermap.legend.setAttribute('id', 'membermap_legend');
+        window.membermap.legend.setAttribute('class', 'gm-style-mtc');
+        window.membermap.google.map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(window.membermap.legend);
+    }
+
+    var row = document.createElement('div');
+    row.innerHTML = window.membermap.users[user].name;
+
+    google.maps.event.addDomListener(row, 'mouseover', function () {
+        this.style.fontWeight = 'bold';
+        window.membermap.users[user].marker.setZIndex(1000);
+        window.membermap.users[user].marker.setAnimation(google.maps.Animation.BOUNCE);
+    });
+
+    google.maps.event.addDomListener(row, 'mouseout', function () {
+        this.style.fontWeight = 'normal';
+        window.membermap.users[user].marker.setAnimation(null);
+    });
+
+    google.maps.event.addDomListener(row, 'click', function () {
+        var position = window.membermap.users[user].marker.getPosition();
+        window.membermap.google.map.panTo(position);
+    });
+
+    document.getElementById('membermap_legend').appendChild(row);
 }
 
 window.membermap.fn.geocode = function () {

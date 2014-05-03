@@ -26,7 +26,7 @@ class plgContentMemberMap extends JPlugin
 
         $class = 'MemberMapAdapter' . $this->params->get('source');
 
-        if (class_exists($class)) { // TODO not really needed?
+        if (class_exists($class)) {
             $this->adapter = new $class($this->params);
         } else {
             JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_CONTENT_MEMBERMAP_SOURCE_NOT_AVAILABLE', $this->params->get('source')), 'error');
@@ -73,9 +73,16 @@ class plgContentMemberMap extends JPlugin
 
         $js[] = 'window.membermap.users = ' . json_encode($users);
 
+        if ($this->params->get('legend', 1)) {
+            $css[] = '#membermap_legend{max-height:' . ($this->params->get('height', 500) - 100) . 'px;}';
+            $doc->addStyleDeclaration(implode($css));
+            $doc->addStyleSheet('media/membermap/membermap.css');
+        }
+
         $config = new stdClass;
         $config->center = (int)$this->params->get('center', 2);
         $config->bounce = $this->params->get('bounce', 1) ? true : false;
+        $config->legend = $this->params->get('legend', 1) ? true : false;
         $config->drop = $this->params->get('drop', 1) ? true : false;
         $config->delay = (int)$this->params->get('delay', 750);
         $config->width = $this->params->get('width', '100%');

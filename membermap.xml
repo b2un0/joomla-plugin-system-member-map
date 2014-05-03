@@ -15,6 +15,7 @@
         <folder>fields</folder>
     </files>
     <media folder="media" destination="membermap">
+        <filename>membermap.css</filename>
         <filename>membermap.js</filename>
     </media>
     <updateservers>
@@ -42,22 +43,26 @@
                     <option value="location">PLG_CONTENT_MEMBERMAP_ORDER_LOCATION</option>
                     <option value="random">PLG_CONTENT_MEMBERMAP_ORDER_RANDOM</option>
                 </field>
+                <field name="legend" type="radio" class="btn-group" default="1" required="true" label="PLG_CONTENT_MEMBERMAP_LEGEND_LABEL" description="PLG_CONTENT_MEMBERMAP_LEGEND_DESC">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
                 <field name="avatar" type="radio" class="btn-group" default="1" required="true" label="PLG_CONTENT_MEMBERMAP_AVATAR_LABEL" description="PLG_CONTENT_MEMBERMAP_AVATAR_DESC">
-                <option value="1">JYES</option>
+                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
                 <field name="size" type="text" default="30" filter="integer" required="true" label="PLG_CONTENT_MEMBERMAP_SIZE_LABEL" description="PLG_CONTENT_MEMBERMAP_SIZE_DESC" />
                 <field name="center" type="text" filter="integer" default="2" required="true" label="PLG_CONTENT_MEMBERMAP_CENTER_LABEL" description="PLG_CONTENT_MEMBERMAP_CENTER_DESC" />
                 <field name="bounce" type="radio" class="btn-group" default="0" required="true" label="PLG_CONTENT_MEMBERMAP_BOUNCE_LABEL" description="PLG_CONTENT_MEMBERMAP_BOUNCE_DESC">
-                <option value="1">JYES</option>
+                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
                 <field name="drop" type="radio" class="btn-group" default="1" required="true" label="PLG_CONTENT_MEMBERMAP_DROP_LABEL" description="PLG_CONTENT_MEMBERMAP_DROP_DESC">
-                <option value="1">JYES</option>
+                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
                 <field name="cluster" type="radio" class="btn-group" default="0" required="true" label="PLG_CONTENT_MEMBERMAP_CLUSTER_LABEL" description="PLG_CONTENT_MEMBERMAP_CLUSTER_DESC">
-                <option value="1">JYES</option>
+                    <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
                 <field name="delay" type="text" default="750" filter="integer" required="true" label="PLG_CONTENT_MEMBERMAP_DELAY_LABEL" description="PLG_CONTENT_MEMBERMAP_DELAY_DESC" />
