@@ -8,6 +8,7 @@
     cursor: pointer;
     overflow: hidden;
     text-align: center;
+    color: rgb(0, 0, 0);
     font-size: 11px;
     padding: 1px 6px;
     border-bottom-left-radius: 2px;
