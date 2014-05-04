@@ -71,7 +71,7 @@ class plgContentMemberMap extends JPlugin
 
         $doc->addScript('media/membermap/membermap.js');
 
-        $js[] = 'window.membermap.users = ' . json_encode($users);
+        $js[] = 'membermap.users = ' . json_encode($users);
 
         if ($this->params->get('legend', 1)) {
             $css[] = '#membermap_legend{max-height:' . ($this->params->get('height', 500) - 100) . 'px;}';
@@ -94,7 +94,7 @@ class plgContentMemberMap extends JPlugin
         $config->size = (int)$this->params->get('size', 30);
         $config->cluster = $this->params->get('cluster', 1) ? true : false;
 
-        $js[] = 'window.membermap.config = ' . json_encode($config);
+        $js[] = 'membermap.config = ' . json_encode($config);
 
         $doc->addScriptDeclaration(implode(';', $js));
     }

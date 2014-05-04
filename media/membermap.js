@@ -5,155 +5,188 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-window.membermap = {};
-window.membermap.fn = {};
-window.membermap.geocoded = 0;
+var membermap = {};
+membermap.fn = {};
+membermap.geocoded = 0;
+membermap.cache = {};
+membermap.users = {};
+membermap.config = {};
 
-window.membermap.fn.initialize = function () {
-    if (typeof window.membermap.users != 'object') {
+membermap.fn.initialize = function () {
+    if (typeof membermap.users != 'object') {
         return;
     }
 
-    document.getElementById('membermap').style.width = window.membermap.config.width;
-    document.getElementById('membermap').style.height = window.membermap.config.height + 'px';
+    document.getElementById('membermap').style.width = membermap.config.width;
+    document.getElementById('membermap').style.height = membermap.config.height + 'px';
 
-    window.membermap.google = {};
-    window.membermap.google.options = {
-        zoom: window.membermap.config.zoom,
-        mapTypeId: google.maps.MapTypeId[window.membermap.config.type],
-        center: new google.maps.LatLng(window.membermap.config.lat, window.membermap.config.lng)
+    membermap.google = {};
+    membermap.google.options = {
+        zoom: membermap.config.zoom,
+        mapTypeId: google.maps.MapTypeId[membermap.config.type],
+        center: new google.maps.LatLng(membermap.config.lat, membermap.config.lng)
     };
 
-    window.membermap.google.map = new google.maps.Map(document.getElementById('membermap'), window.membermap.google.options);
-    window.membermap.google.geocoder = new google.maps.Geocoder();
-    window.membermap.google.bounds = new google.maps.LatLngBounds();
+    membermap.google.map = new google.maps.Map(document.getElementById('membermap'), membermap.google.options);
+    membermap.google.geocoder = new google.maps.Geocoder();
+    membermap.google.bounds = new google.maps.LatLngBounds();
 
-    if (window.membermap.config.cluster) {
-        window.membermap.google.cluster = new MarkerClusterer(window.membermap.google.map);
+    if (membermap.config.cluster) {
+        membermap.google.cluster = new MarkerClusterer(membermap.google.map);
     }
 
-    google.maps.event.addListenerOnce(window.membermap.google.map, 'idle', window.membermap.fn.geocode);
+    google.maps.event.addListenerOnce(membermap.google.map, 'idle', membermap.fn.geocode);
 
-    if (window.membermap.config.delay) {
-        window.membermap.intval = window.setInterval(window.membermap.fn.markers, window.membermap.config.delay);
+    if (membermap.config.delay) {
+        membermap.intval = window.setInterval(membermap.fn.markers, membermap.config.delay);
     }
 }
 
-window.membermap.fn.markers = function () {
+membermap.fn.markers = function () {
     var finished = true;
-    for (var user = 0; user < window.membermap.users.length; user++) {
-        if (!window.membermap.users[user].placed && window.membermap.users[user].ready) {
-            window.membermap.users[user].placed = true;
-            window.membermap.fn.marker(user);
+    for (var user = 0; user < membermap.users.length; user++) {
+        if (!membermap.users[user].placed && membermap.users[user].ready) {
+            membermap.users[user].placed = true;
+            membermap.fn.marker(user);
             finished = false;
             break;
         }
 
-        if (!window.membermap.users[user].ready) {
+        if (!membermap.users[user].ready) {
             finished = false;
         }
     }
 
     if (finished) {
-        window.clearInterval(window.membermap.intval);
+        window.clearInterval(membermap.intval);
     }
 }
 
-window.membermap.fn.marker = function (user) {
-    if (typeof window.membermap.users[user].position == 'undefined') {
+membermap.fn.marker = function (user) {
+    if (typeof membermap.users[user].position == 'undefined') {
         return;
     }
 
-    window.membermap.users[user].marker = new google.maps.Marker({
-        title: window.membermap.users[user].name,
-        position: window.membermap.users[user].position,
-        animation: window.membermap.config.drop ? google.maps.Animation.DROP : null
+    membermap.users[user].marker = new google.maps.Marker({
+        title: membermap.users[user].name,
+        position: membermap.users[user].position,
+        animation: membermap.config.drop ? google.maps.Animation.DROP : null
     });
 
-    google.maps.event.addListener(window.membermap.users[user].marker, 'click', function () {
-        window.location.href = window.membermap.users[user].url;
+    google.maps.event.addListener(membermap.users[user].marker, 'click', function () {
+        window.location.href = membermap.users[user].url;
     });
 
-    google.maps.event.addListener(window.membermap.users[user].marker, 'mouseover', function () {
+    google.maps.event.addListener(membermap.users[user].marker, 'mouseover', function () {
         this.setZIndex(1000);
     });
 
-    if (window.membermap.users[user].avatar) {
-        window.membermap.users[user].marker.setIcon(new google.maps.MarkerImage(window.membermap.users[user].avatar, null, null, null, new google.maps.Size(window.membermap.config.size, window.membermap.config.size)));
+    if (membermap.users[user].avatar) {
+        membermap.users[user].marker.setIcon(new google.maps.MarkerImage(membermap.users[user].avatar, null, null, null, new google.maps.Size(membermap.config.size, membermap.config.size)));
     }
 
-    if (window.membermap.config.legend) {
-        window.membermap.fn.legend(user);
+    if (membermap.config.legend) {
+        membermap.fn.legend(user);
     }
 
-    if (window.membermap.config.cluster) {
-        window.membermap.google.cluster.addMarker(window.membermap.users[user].marker);
+    if (membermap.config.cluster) {
+        membermap.google.cluster.addMarker(membermap.users[user].marker);
     } else {
-        window.membermap.users[user].marker.setMap(window.membermap.google.map);
+        membermap.users[user].marker.setMap(membermap.google.map);
     }
 
-    window.membermap.geocoded++;
+    membermap.geocoded++;
 
-    window.membermap.google.bounds.extend(window.membermap.users[user].position);
+    membermap.google.bounds.extend(membermap.users[user].position);
 
-    if (window.membermap.geocoded >= window.membermap.config.center) {
-        window.membermap.google.map.fitBounds(window.membermap.google.bounds);
+    if (membermap.geocoded >= membermap.config.center) {
+        membermap.google.map.fitBounds(membermap.google.bounds);
     }
 }
 
-window.membermap.fn.legend = function (user) {
-    if (!window.membermap.legend) {
-        window.membermap.legend = document.createElement('div');
-        window.membermap.legend.setAttribute('id', 'membermap_legend');
-        window.membermap.legend.setAttribute('class', 'gm-style-mtc');
-        window.membermap.google.map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(window.membermap.legend);
+membermap.fn.legend = function (user) {
+    if (!membermap.legend) {
+        membermap.legend = document.createElement('div');
+        membermap.legend.setAttribute('id', 'membermap_legend');
+        membermap.legend.setAttribute('class', 'gm-style-mtc');
+        membermap.google.map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(membermap.legend);
     }
 
     var row = document.createElement('div');
-    row.innerHTML = window.membermap.users[user].name;
+    row.innerHTML = membermap.users[user].name;
 
     google.maps.event.addDomListener(row, 'mouseover', function () {
         this.style.fontWeight = 'bold';
-        window.membermap.users[user].marker.setZIndex(1000);
-        window.membermap.users[user].marker.setAnimation(google.maps.Animation.BOUNCE);
+        membermap.users[user].marker.setZIndex(1000);
+        membermap.users[user].marker.setAnimation(google.maps.Animation.BOUNCE);
     });
 
     google.maps.event.addDomListener(row, 'mouseout', function () {
         this.style.fontWeight = 'normal';
-        window.membermap.users[user].marker.setAnimation(null);
+        membermap.users[user].marker.setAnimation(null);
     });
 
     google.maps.event.addDomListener(row, 'click', function () {
-        var position = window.membermap.users[user].marker.getPosition();
-        window.membermap.google.map.panTo(position);
-        window.membermap.google.map.setZoom(10);
+        var position = membermap.users[user].marker.getPosition();
+        membermap.google.map.panTo(position);
+        membermap.google.map.setZoom(10);
     });
 
     document.getElementById('membermap_legend').appendChild(row);
 }
 
-window.membermap.fn.geocode = function () {
-    for (var user = 0; user < window.membermap.users.length; user++) {
-        if (!window.membermap.users[user].ready) {
-            window.membermap.users[user].requests++;
-            window.membermap.google.geocoder.geocode({'address': window.membermap.users[user].address}, function (user) {
-                return(function (results, status) {
-                    if (status == google.maps.GeocoderStatus.OK) {
-                        window.membermap.users[user].position = results[0].geometry.location;
-                        window.membermap.users[user].ready = true;
-                        if (!window.membermap.config.delay) {
-                            window.membermap.fn.marker(user);
+membermap.fn.geocode = function () {
+    for (var user = 0; user < membermap.users.length; user++) {
+        if (!membermap.users[user].ready) {
+            membermap.users[user].requests++;
+            var position;
+            if (position = membermap.cache.get(membermap.users[user].address)) {
+                membermap.users[user].position = new google.maps.LatLng(position.k, position.A);
+                membermap.users[user].ready = true;
+                if (!membermap.config.delay) {
+                    membermap.fn.marker(user);
+                }
+            } else {
+                membermap.google.geocoder.geocode({'address': membermap.users[user].address}, function (user) {
+                    return(function (results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            membermap.users[user].position = results[0].geometry.location;
+                            membermap.users[user].ready = true;
+                            membermap.cache.set(membermap.users[user].address, membermap.users[user].position);
+                            if (!membermap.config.delay) {
+                                membermap.fn.marker(user);
+                            }
+                        } else {
+                            window.setTimeout(membermap.fn.geocode, 500 * membermap.users[user].requests);
+                            if (membermap.users[user].requests >= membermap.config.requests) {
+                                membermap.users[user].ready = true;
+                            }
                         }
-                    } else {
-                        window.setTimeout(window.membermap.fn.geocode, 500);
-                        if (window.membermap.users[user].requests >= window.membermap.config.requests) {
-                            window.membermap.users[user].ready = true;
-                        }
-                    }
-                });
-            }(user));
+                    });
+                }(user));
+            }
         }
     }
 }
 
-google.maps.event.addDomListener(window, 'load', window.membermap.fn.initialize);
+membermap.cache.set = function (key, val) {
+    if (!window.localStorage) {
+        return false;
+    }
+
+    return localStorage.setItem('membermap_' + key, JSON.stringify(val));
+}
+
+membermap.cache.get = function (key, val) {
+    if (!window.localStorage) {
+        return false;
+    }
+
+    if (val = localStorage.getItem('membermap_' + key)) {
+        return JSON.parse(val);
+    }
+
+    return val;
+}
+
+google.maps.event.addDomListener(window, 'load', membermap.fn.initialize);
