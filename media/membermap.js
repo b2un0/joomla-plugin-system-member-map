@@ -141,14 +141,14 @@ membermap.fn.geocode = function () {
             membermap.users[user].requests++;
             var position;
             if (position = membermap.cache.get(membermap.users[user].address)) {
-                membermap.users[user].position = new google.maps.LatLng(position.k, position.A);
+                membermap.users[user].position = new google.maps.LatLng(position.k, position.B);
                 membermap.users[user].ready = true;
                 if (!membermap.config.delay) {
                     membermap.fn.marker(user);
                 }
             } else {
                 membermap.google.geocoder.geocode({'address': membermap.users[user].address}, function (user) {
-                    return(function (results, status) {
+                    return (function (results, status) {
                         if (status == google.maps.GeocoderStatus.OK) {
                             membermap.users[user].position = results[0].geometry.location;
                             membermap.users[user].ready = true;
@@ -185,7 +185,6 @@ membermap.cache.get = function (key, val) {
     if (val = localStorage.getItem('membermap_' + key)) {
         return JSON.parse(val);
     }
-
     return val;
 }
 
