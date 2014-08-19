@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die;
 
-final class MemberMapAdapterKunena implements MemberMapAdapterInterface
+final class MemberMapAdapterJomSocial implements MemberMapAdapterInterface
 {
     protected $params;
 
@@ -20,18 +20,27 @@ final class MemberMapAdapterKunena implements MemberMapAdapterInterface
 
     public function getUsers()
     {
-        if (!JComponentHelper::isEnabled('com_kunena')) {
-            JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_CONTENT_MEMBERMAP_SOURCE_NOT_ENABLED', 'Kunena'), 'error');
+        if (!JComponentHelper::isEnabled('com_community')) {
+            JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_CONTENT_MEMBERMAP_SOURCE_NOT_ENABLED', 'JomSocial'), 'error');
             return false;
         }
 
+        JLoader::register('CFactory', JPATH_ROOT . '/components/com_community/libraries/core.php');
+
+        $config = CFactory::getConfig();
+
         $db = JFactory::getDbo();
+
+        // preselection of users with city
         $query = $db->getQuery(true)
             ->select('DISTINCT u.id')
-            ->from('#__kunena_users AS ku')
-            ->join('INNER', '#__users AS u ON(u.id = ku.userid)')
+            ->from('#__community_fields AS f')
+            ->join('INNER', '#__community_fields_values AS fv ON(f.id = fv.field_id)')
+            ->join('INNER', '#__users AS u ON(u.id = fv.user_id)')
             ->where('u.block = ' . $db->quote(0))
-            ->where('ku.location != ' . $db->quote(''));
+            ->where('f.published = ' . $db->quote(1))
+            ->where('f.fieldcode = ' . $db->quote($config->get('fieldcodecity')))
+            ->where('fv.value != ' . $db->quote(''));
 
         if ($usergroups = $this->params->get('usergroup')) {
             $query->join('INNER', '#__user_usergroup_map AS g ON(u.id = g.user_id)');
@@ -54,7 +63,7 @@ final class MemberMapAdapterKunena implements MemberMapAdapterInterface
                 break;
 
             case 'location':
-                $query->order('ku.location');
+                $query->order('fv.value');
                 break;
 
             case 'random':
@@ -70,18 +79,30 @@ final class MemberMapAdapterKunena implements MemberMapAdapterInterface
             return null;
         }
 
+        JFactory::getLanguage()->load('com_community.country');
+
         $users = array();
-        foreach ($members as $key => &$member) {
-            $member = KunenaFactory::getUser($member);
+        foreach ($members as $key => $member) {
+            $member = CFactory::getUser($member);
+
+            $location = array(
+                $member->getInfo($config->get('fieldcodestreet')),
+                $member->getInfo($config->get('fieldcodecity')),
+                $member->getInfo($config->get('fieldcodecountry'))
+            );
+
+            $location = array_map(array('JText', '_'), $location); // replace country names
+            $location = array_filter($location); // remove empty array elements
+
             $users[$key] = new stdClass;
-            $users[$key]->name = $member->getName();
-            $users[$key]->address = $member->location;
-            $users[$key]->url = $member->getURL();
+            $users[$key]->name = $member->getDisplayName();
+            $users[$key]->address = implode(', ', $location); // build location string for google maps geocoder
+            $users[$key]->url = CRoute::_('index.php?option=com_community&view=profile&userid=' . $member->id);
             $users[$key]->requests = 0;
             $users[$key]->ready = false;
 
             if ($this->params->get('avatar', 1)) {
-                $users[$key]->avatar = $member->getAvatarURL();
+                $users[$key]->avatar = $member->getThumbAvatar();
                 if (!filter_var($users[$key]->avatar, FILTER_VALIDATE_URL)) {
                     $users[$key]->avatar = JUri::root() . $users[$key]->avatar;
                 }
