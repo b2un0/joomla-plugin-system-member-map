@@ -35,7 +35,7 @@
                     <!--<option value="contact">PLG_CONTENT_MEMBERMAP_SOURCE_CONTACT</option>-->
                     <option value="kunena">PLG_CONTENT_MEMBERMAP_SOURCE_KUNENA</option>
                     <option value="jomsocial">PLG_CONTENT_MEMBERMAP_SOURCE_JOMSOCIAL</option>
-                    <option value="comprofiler">PLG_CONTENT_MEMBERMAP_SOURCE_COMPROFILER</option>-
+                    <!--<option value="comprofiler">PLG_CONTENT_MEMBERMAP_SOURCE_COMPROFILER</option>-->
                 </field>
                 <field name="usergroup" type="usergroup" multiple="true" size="3" default="" label="PLG_CONTENT_MEMBERMAP_USERGROUP_LABEL" description="PLG_CONTENT_MEMBERMAP_USERGROUP_DESC" />
                 <field name="order" type="list" default="name" required="true" label="PLG_CONTENT_MEMBERMAP_ORDER_LABEL" description="PLG_CONTENT_MEMBERMAP_ORDER_DESC">
