@@ -140,11 +140,16 @@ membermap.fn.geocode = function () {
         if (!membermap.users[user].ready) {
             membermap.users[user].requests++;
             var position;
+
             if (position = membermap.cache.get(membermap.users[user].address)) {
-                membermap.users[user].position = new google.maps.LatLng(position.k, position.B);
-                membermap.users[user].ready = true;
-                if (!membermap.config.delay) {
-                    membermap.fn.marker(user);
+                position = position.split(',', 2);
+                var lat = parseFloat(position[0].substring(1)), lng = parseFloat(position[1].substring(1, position[1].length - 1));
+                if (typeof lat == 'number' && typeof lng == 'number') {
+                    membermap.users[user].position = new google.maps.LatLng(lat, lng);
+                    membermap.users[user].ready = true;
+                    if (!membermap.config.delay) {
+                        membermap.fn.marker(user);
+                    }
                 }
             } else {
                 membermap.google.geocoder.geocode({'address': membermap.users[user].address}, function (user) {
@@ -152,7 +157,7 @@ membermap.fn.geocode = function () {
                         if (status == google.maps.GeocoderStatus.OK) {
                             membermap.users[user].position = results[0].geometry.location;
                             membermap.users[user].ready = true;
-                            membermap.cache.set(membermap.users[user].address, membermap.users[user].position);
+                            membermap.cache.set(membermap.users[user].address, membermap.users[user].position.toString());
                             if (!membermap.config.delay) {
                                 membermap.fn.marker(user);
                             }
@@ -174,7 +179,7 @@ membermap.cache.set = function (key, val) {
         return false;
     }
 
-    return localStorage.setItem('membermap_' + key, JSON.stringify(val));
+    return localStorage.setItem('mm_' + key, val);
 }
 
 membermap.cache.get = function (key, val) {
@@ -182,8 +187,8 @@ membermap.cache.get = function (key, val) {
         return false;
     }
 
-    if (val = localStorage.getItem('membermap_' + key)) {
-        return JSON.parse(val);
+    if (val = localStorage.getItem('mm_' + key)) {
+        return val;
     }
     return val;
 }
