@@ -3,7 +3,7 @@
 /**
  * @author     Branko Wilhelm <branko.wilhelm@gmail.com>
  * @link       http://www.z-index.net
- * @copyright  (c) 2014 Branko Wilhelm
+ * @copyright  (c) 2014 - 2015 Branko Wilhelm
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
@@ -15,7 +15,7 @@ class JFormFieldGMap extends JFormField
 
     protected function getInput()
     {
-        $plugin = JPluginHelper::getPlugin('content', 'membermap');
+		$plugin = JPluginHelper::getPlugin('system', 'membermap');
         $params = new JRegistry(!empty($plugin) ? $plugin->params : null);
 
         $doc = JFactory::getDocument();
@@ -58,7 +58,6 @@ EOL;
 
         $doc->addScriptDeclaration($onload);
 
-        // TODO add css fix for Joomla 2.5
         return '<div id="gmap" style="width:400px;height:300px;"></div>';
     }
 }

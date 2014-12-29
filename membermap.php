@@ -3,16 +3,48 @@
 /**
  * @author     Branko Wilhelm <branko.wilhelm@gmail.com>
  * @link       http://www.z-index.net
- * @copyright  (c) 2014 Branko Wilhelm
+ * @copyright  (c) 2014 - 2015 Branko Wilhelm
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
 defined('_JEXEC') or die;
 
-class plgContentMemberMap extends JPlugin
+class plgSystemMemberMap extends JPlugin
 {
     protected $loaded = false;
     protected $adapter = null;
+
+    public function onAjaxMembermap()
+    {
+        $input = JFactory::getApplication()->input;
+        $key = $input->getString('key');
+        $val = $input->getString('val');
+
+        if (!empty($val)) {
+            $val = explode(',', $val);
+            $obj = new stdClass;
+            $obj->lat = (float)filter_var($val[0], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+            $obj->lng = (float)filter_var($val[1], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+            $val = $obj;
+        }
+
+        return $this->handleLocation($key, $val);
+    }
+
+    protected function handleLocation($key, $val = null)
+    {
+        $cache = JFactory::getCache('membermap', 'output');
+        $cache->setCaching(1);
+        $cache->setLifeTime($this->params->get('cache_timeout', 24) * 60);
+
+        $key = md5($key);
+
+        if (empty($val)) {
+            return $cache->get($key);
+        } else {
+            return $cache->store($val, $key);
+        }
+    }
 
     public function onContentPrepare($context, &$row, &$params, $page = 0)
     {
@@ -22,19 +54,19 @@ class plgContentMemberMap extends JPlugin
 
         $this->loadLanguage();
 
-        JLoader::discover('MemberMapAdapter', dirname(__FILE__) . '/adapters/');
+        JLoader::discover('MemberMapAdapter', __DIR__ . '/adapters/');
 
         $class = 'MemberMapAdapter' . $this->params->get('source');
 
         if (class_exists($class)) {
             $this->adapter = new $class($this->params);
         } else {
-            JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_CONTENT_MEMBERMAP_SOURCE_NOT_AVAILABLE', $this->params->get('source')), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_MEMBERMAP_SOURCE_NOT_AVAILABLE', $this->params->get('source')), 'error');
             return true;
         }
 
         if ($this->loaded == true) {
-            JFactory::getApplication()->enqueueMessage(JText::_('PLG_CONTENT_MEMBERMAP_ONLY_ONE_INSTANCE'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_MEMBERMAP_ONLY_ONE_INSTANCE'), 'error');
             return true;
         } else {
             $this->initMap();
@@ -49,7 +81,7 @@ class plgContentMemberMap extends JPlugin
         $users = $this->adapter->getUsers();
 
         if (empty($users)) {
-            JFactory::getApplication()->enqueueMessage(JText::_('PLG_CONTENT_MEMBERMAP_NO_USERS'), 'warning');
+            JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_MEMBERMAP_NO_USERS'), 'warning');
             return false;
         }
 
@@ -69,14 +101,21 @@ class plgContentMemberMap extends JPlugin
             $doc->addScript('//google-maps-utility-library-v3.googlecode.com/svn/tags/markerclusterer/1.0.2/src/markerclusterer_compiled.js');
         }
 
-        $doc->addScript('media/membermap/membermap.js');
+        foreach ($users as $user) {
+            if ($postion = $this->handleLocation($user->address)) {
+                $user->position = $postion;
+                $user->position->lat = (float)$user->position->lat;
+                $user->position->lng = (float)$user->position->lng;
+                $user->ready = true;
+            }
+        }
 
         $js[] = 'membermap.users = ' . json_encode($users);
 
         if ($this->params->get('legend', 1)) {
             $css[] = '#membermap_legend{max-height:' . ($this->params->get('height', 500) - 100) . 'px;}';
             $doc->addStyleDeclaration(implode($css));
-            $doc->addStyleSheet('media/membermap/membermap.css');
+            $doc->addStyleSheet('media/plg_system_membermap/membermap.css');
         }
 
         $config = new stdClass;
@@ -93,9 +132,14 @@ class plgContentMemberMap extends JPlugin
         $config->requests = (int)$this->params->get('requests', 3);
         $config->size = (int)$this->params->get('size', 30);
         $config->cluster = $this->params->get('cluster', 1) ? true : false;
+        $config->base = JUri::base();
 
         $js[] = 'membermap.config = ' . json_encode($config);
 
         $doc->addScriptDeclaration(implode(';', $js));
+
+        JHtml::_('jquery.framework');
+
+        $doc->addScript('media/plg_system_membermap/membermap.js');
     }
 }

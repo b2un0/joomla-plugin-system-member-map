@@ -1,7 +1,7 @@
 /**
  * @author      Branko Wilhelm <branko.wilhelm@gmail.com>
  * @link        http://www.z-index.net
- * @copyright   (c) 2014 Branko Wilhelm
+ * @copyright   (c) 2014 - 2015 Branko Wilhelm
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
@@ -40,7 +40,7 @@ membermap.fn.initialize = function () {
     if (membermap.config.delay) {
         membermap.intval = window.setInterval(membermap.fn.markers, membermap.config.delay);
     }
-}
+};
 
 membermap.fn.markers = function () {
     var finished = true;
@@ -60,11 +60,16 @@ membermap.fn.markers = function () {
     if (finished) {
         window.clearInterval(membermap.intval);
     }
-}
+};
 
 membermap.fn.marker = function (user) {
     if (typeof membermap.users[user].position == 'undefined') {
         return;
+    }
+
+    if (typeof membermap.users[user].position == 'object') {
+        membermap.users[user].position = new google.maps.LatLng(membermap.users[user].position.lat, membermap.users[user].position.lng);
+        membermap.users[user].ready = true;
     }
 
     membermap.users[user].marker = new google.maps.Marker({
@@ -102,7 +107,7 @@ membermap.fn.marker = function (user) {
     if (membermap.geocoded >= membermap.config.center) {
         membermap.google.map.fitBounds(membermap.google.bounds);
     }
-}
+};
 
 membermap.fn.legend = function (user) {
     if (!membermap.legend) {
@@ -133,64 +138,42 @@ membermap.fn.legend = function (user) {
     });
 
     document.getElementById('membermap_legend').appendChild(row);
-}
+};
 
 membermap.fn.geocode = function () {
     for (var user = 0; user < membermap.users.length; user++) {
         if (!membermap.users[user].ready) {
             membermap.users[user].requests++;
-            var position;
 
-            if (position = membermap.cache.get(membermap.users[user].address)) {
-                position = position.split(',', 2);
-                var lat = parseFloat(position[0].substring(1)), lng = parseFloat(position[1].substring(1, position[1].length - 1));
-                if (typeof lat == 'number' && typeof lng == 'number') {
-                    membermap.users[user].position = new google.maps.LatLng(lat, lng);
-                    membermap.users[user].ready = true;
-                    if (!membermap.config.delay) {
-                        membermap.fn.marker(user);
-                    }
-                }
-            } else {
-                membermap.google.geocoder.geocode({'address': membermap.users[user].address}, function (user) {
-                    return (function (results, status) {
-                        if (status == google.maps.GeocoderStatus.OK) {
-                            membermap.users[user].position = results[0].geometry.location;
-                            membermap.users[user].ready = true;
-                            membermap.cache.set(membermap.users[user].address, membermap.users[user].position.toString());
-                            if (!membermap.config.delay) {
-                                membermap.fn.marker(user);
-                            }
-                        } else {
-                            window.setTimeout(membermap.fn.geocode, 500 * membermap.users[user].requests);
-                            if (membermap.users[user].requests >= membermap.config.requests) {
-                                membermap.users[user].ready = true;
-                            }
+            membermap.google.geocoder.geocode({'address': membermap.users[user].address}, function (user) {
+                return (function (results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        membermap.users[user].position = results[0].geometry.location;
+                        membermap.users[user].ready = true;
+                        membermap.cache.handle(membermap.users[user].address, membermap.users[user].position.toString());
+                        if (!membermap.config.delay) {
+                            membermap.fn.marker(user);
                         }
-                    });
-                }(user));
-            }
+                    } else {
+                        window.setTimeout(membermap.fn.geocode, 500 * membermap.users[user].requests);
+                        if (membermap.users[user].requests >= membermap.config.requests) {
+                            membermap.users[user].ready = true;
+                        }
+                    }
+                });
+            }(user));
         }
     }
-}
+};
 
-membermap.cache.set = function (key, val) {
-    if (!window.localStorage) {
-        return false;
-    }
-
-    return localStorage.setItem('mm_' + key, val);
-}
-
-membermap.cache.get = function (key, val) {
-    if (!window.localStorage) {
-        return false;
-    }
-
-    if (val = localStorage.getItem('mm_' + key)) {
-        return val;
-    }
-    return val;
-}
+membermap.cache.handle = function (key, val) {
+    jQuery.post(window.membermap.config.base, {
+        option: 'com_ajax',
+        plugin: 'membermap',
+        format: 'raw',
+        key: key,
+        val: val
+    });
+};
 
 google.maps.event.addDomListener(window, 'load', membermap.fn.initialize);

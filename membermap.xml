@@ -1,89 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="2.5" type="plugin" group="content" method="upgrade">
-    <name>PLG_CONTENT_MEMBERMAP</name>
+<extension version="2.5" type="plugin" group="system" method="upgrade">
+    <name>PLG_SYSTEM_MEMBERMAP</name>
     <author>Branko Wilhelm</author>
     <creationDate>Jan 2014</creationDate>
-    <copyright>Copyright (C) 2014 Branko Wilhelm. All rights reserved.</copyright>
+    <copyright>Copyright (c) 2014 - 2015 Branko Wilhelm. All rights reserved.</copyright>
     <license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
     <authorEmail>branko.wilhelm@gmail.com</authorEmail>
     <authorUrl>www.z-index.net</authorUrl>
     <version>@REVISION@</version>
-    <description>PLG_CONTENT_MEMBERMAP_DESCRIPTION</description>
+    <description>PLG_SYSTEM_MEMBERMAP_DESCRIPTION</description>
     <files>
         <filename plugin="membermap">membermap.php</filename>
         <folder>adapters</folder>
         <folder>fields</folder>
     </files>
-    <media folder="media" destination="membermap">
+    <scriptfile>script.installer.php</scriptfile>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_system_membermap.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_system_membermap.sys.ini</language>
+        <!-- <language tag="de-DE">de-DE/de-DE.plg_system_membermap.ini</language> -->
+        <!-- <language tag="de-DE">de-DE/de-DE.plg_system_membermap.sys.ini</language> -->
+    </languages>
+    <media folder="media" destination="plg_system_membermap">
         <filename>membermap.css</filename>
         <filename>membermap.js</filename>
     </media>
     <updateservers>
         <server type="collection" priority="1" name="z-index development">http://www.z-index.net/en/extensions.xml</server>
     </updateservers>
-    <languages folder="language">
-        <language tag="en-GB">en-GB/en-GB.plg_content_membermap.ini</language>
-        <language tag="en-GB">en-GB/en-GB.plg_content_membermap.sys.ini</language>
-        <!-- <language tag="de-DE">de-DE/de-DE.plg_content_membermap.ini</language> -->
-        <!-- <language tag="de-DE">de-DE/de-DE.plg_content_membermap.sys.ini</language> -->
-    </languages>
     <config>
-        <fields name="params" addfieldpath="/plugins/content/membermap/fields/">
+        <fields name="params" addfieldpath="/plugins/system/membermap/fields/">
             <fieldset name="basic">
-                <field name="source" type="list" default="" required="true" label="PLG_CONTENT_MEMBERMAP_SOURCE_LABEL" description="PLG_CONTENT_MEMBERMAP_SOURCE_DESC">
+                <field name="source" type="list" default="" required="true" label="PLG_SYSTEM_MEMBERMAP_SOURCE_LABEL" description="PLG_SYSTEM_MEMBERMAP_SOURCE_DESC">
                     <option value="">JSELECT</option>
-                    <!--<option value="contact">PLG_CONTENT_MEMBERMAP_SOURCE_CONTACT</option>-->
-                    <option value="kunena">PLG_CONTENT_MEMBERMAP_SOURCE_KUNENA</option>
-                    <option value="jomsocial">PLG_CONTENT_MEMBERMAP_SOURCE_JOMSOCIAL</option>
-                    <!--<option value="comprofiler">PLG_CONTENT_MEMBERMAP_SOURCE_COMPROFILER</option>-->
+                    <!--<option value="contact">PLG_SYSTEM_MEMBERMAP_SOURCE_CONTACT</option>-->
+                    <option value="kunena">PLG_SYSTEM_MEMBERMAP_SOURCE_KUNENA</option>
+                    <option value="jomsocial">PLG_SYSTEM_MEMBERMAP_SOURCE_JOMSOCIAL</option>
+                    <!--<option value="comprofiler">PLG_SYSTEM_MEMBERMAP_SOURCE_COMPROFILER</option>-->
                 </field>
-                <field name="usergroup" type="usergroup" multiple="true" size="3" default="" label="PLG_CONTENT_MEMBERMAP_USERGROUP_LABEL" description="PLG_CONTENT_MEMBERMAP_USERGROUP_DESC" />
-                <field name="order" type="list" default="name" required="true" label="PLG_CONTENT_MEMBERMAP_ORDER_LABEL" description="PLG_CONTENT_MEMBERMAP_ORDER_DESC">
-                    <option value="name">PLG_CONTENT_MEMBERMAP_ORDER_NAME</option>
-                    <option value="username">PLG_CONTENT_MEMBERMAP_ORDER_USERNAME</option>
-                    <option value="userid">PLG_CONTENT_MEMBERMAP_ORDER_USERID</option>
-                    <option value="location">PLG_CONTENT_MEMBERMAP_ORDER_LOCATION</option>
-                    <option value="random">PLG_CONTENT_MEMBERMAP_ORDER_RANDOM</option>
+                <field name="usergroup" type="usergroup" multiple="true" size="3" default="" label="PLG_SYSTEM_MEMBERMAP_USERGROUP_LABEL" description="PLG_SYSTEM_MEMBERMAP_USERGROUP_DESC" />
+                <field name="order" type="list" default="name" required="true" label="PLG_SYSTEM_MEMBERMAP_ORDER_LABEL" description="PLG_SYSTEM_MEMBERMAP_ORDER_DESC">
+                    <option value="name">PLG_SYSTEM_MEMBERMAP_ORDER_NAME</option>
+                    <option value="username">PLG_SYSTEM_MEMBERMAP_ORDER_USERNAME</option>
+                    <option value="userid">PLG_SYSTEM_MEMBERMAP_ORDER_USERID</option>
+                    <option value="location">PLG_SYSTEM_MEMBERMAP_ORDER_LOCATION</option>
+                    <option value="random">PLG_SYSTEM_MEMBERMAP_ORDER_RANDOM</option>
                 </field>
-                <field name="legend" type="radio" class="btn-group" default="1" required="true" label="PLG_CONTENT_MEMBERMAP_LEGEND_LABEL" description="PLG_CONTENT_MEMBERMAP_LEGEND_DESC">
+                <field name="legend" type="radio" class="btn-group" default="1" required="true" label="PLG_SYSTEM_MEMBERMAP_LEGEND_LABEL" description="PLG_SYSTEM_MEMBERMAP_LEGEND_DESC">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-                <field name="avatar" type="radio" class="btn-group" default="1" required="true" label="PLG_CONTENT_MEMBERMAP_AVATAR_LABEL" description="PLG_CONTENT_MEMBERMAP_AVATAR_DESC">
+                <field name="avatar" type="radio" class="btn-group" default="1" required="true" label="PLG_SYSTEM_MEMBERMAP_AVATAR_LABEL" description="PLG_SYSTEM_MEMBERMAP_AVATAR_DESC">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-                <field name="size" type="text" default="30" filter="integer" required="true" label="PLG_CONTENT_MEMBERMAP_SIZE_LABEL" description="PLG_CONTENT_MEMBERMAP_SIZE_DESC" />
-                <field name="center" type="text" filter="integer" default="2" required="true" label="PLG_CONTENT_MEMBERMAP_CENTER_LABEL" description="PLG_CONTENT_MEMBERMAP_CENTER_DESC" />
-                <field name="drop" type="radio" class="btn-group" default="1" required="true" label="PLG_CONTENT_MEMBERMAP_DROP_LABEL" description="PLG_CONTENT_MEMBERMAP_DROP_DESC">
+                <field name="size" type="text" default="30" filter="integer" required="true" label="PLG_SYSTEM_MEMBERMAP_SIZE_LABEL" description="PLG_SYSTEM_MEMBERMAP_SIZE_DESC" />
+                <field name="center" type="text" filter="integer" default="2" required="true" label="PLG_SYSTEM_MEMBERMAP_CENTER_LABEL" description="PLG_SYSTEM_MEMBERMAP_CENTER_DESC" />
+                <field name="drop" type="radio" class="btn-group" default="1" required="true" label="PLG_SYSTEM_MEMBERMAP_DROP_LABEL" description="PLG_SYSTEM_MEMBERMAP_DROP_DESC">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-                <field name="cluster" type="radio" class="btn-group" default="0" required="true" label="PLG_CONTENT_MEMBERMAP_CLUSTER_LABEL" description="PLG_CONTENT_MEMBERMAP_CLUSTER_DESC">
+                <field name="cluster" type="radio" class="btn-group" default="0" required="true" label="PLG_SYSTEM_MEMBERMAP_CLUSTER_LABEL" description="PLG_SYSTEM_MEMBERMAP_CLUSTER_DESC">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-                <field name="delay" type="text" default="750" filter="integer" required="true" label="PLG_CONTENT_MEMBERMAP_DELAY_LABEL" description="PLG_CONTENT_MEMBERMAP_DELAY_DESC" />
-                <field name="width" type="text" default="100%" required="true" label="PLG_CONTENT_MEMBERMAP_WIDTH_LABEL" description="PLG_CONTENT_MEMBERMAP_WIDTH_DESC" />
-                <field name="height" type="text" default="500" filter="integer" required="true" label="PLG_CONTENT_MEMBERMAP_HEIGHT_LABEL" description="PLG_CONTENT_MEMBERMAP_HEIGHT_DESC" />
-                <field name="type" type="list" default="roadmap" required="true" label="PLG_CONTENT_MEMBERMAP_TYPE_LABEL" description="PLG_CONTENT_MEMBERMAP_TYPE_DESC">
-                    <option value="roadmap">PLG_CONTENT_MEMBERMAP_TYPE_ROADMAP</option>
-                    <option value="satellite">PLG_CONTENT_MEMBERMAP_TYPE_SATELLITE</option>
-                    <option value="hybrid">PLG_CONTENT_MEMBERMAP_TYPE_HYBRID</option>
-                    <option value="terrain">PLG_CONTENT_MEMBERMAP_TYPE_TERRAIN</option>
+                <field name="delay" type="text" default="750" filter="integer" required="true" label="PLG_SYSTEM_MEMBERMAP_DELAY_LABEL" description="PLG_SYSTEM_MEMBERMAP_DELAY_DESC" />
+                <field name="width" type="text" default="100%" required="true" label="PLG_SYSTEM_MEMBERMAP_WIDTH_LABEL" description="PLG_SYSTEM_MEMBERMAP_WIDTH_DESC" />
+                <field name="height" type="text" default="500" filter="integer" required="true" label="PLG_SYSTEM_MEMBERMAP_HEIGHT_LABEL" description="PLG_SYSTEM_MEMBERMAP_HEIGHT_DESC" />
+                <field name="type" type="list" default="roadmap" required="true" label="PLG_SYSTEM_MEMBERMAP_TYPE_LABEL" description="PLG_SYSTEM_MEMBERMAP_TYPE_DESC">
+                    <option value="roadmap">PLG_SYSTEM_MEMBERMAP_TYPE_ROADMAP</option>
+                    <option value="satellite">PLG_SYSTEM_MEMBERMAP_TYPE_SATELLITE</option>
+                    <option value="hybrid">PLG_SYSTEM_MEMBERMAP_TYPE_HYBRID</option>
+                    <option value="terrain">PLG_SYSTEM_MEMBERMAP_TYPE_TERRAIN</option>
                 </field>
-                <field name="zoom" type="text" default="1" filter="integer" required="true" readonly="true" label="PLG_CONTENT_MEMBERMAP_ZOOM_LABEL" description="PLG_CONTENT_MEMBERMAP_ZOOM_DESC" />
-                <field name="lat" type="text" default="42" filter="float" required="true" readonly="true" label="PLG_CONTENT_MEMBERMAP_LAT_LABEL" description="PLG_CONTENT_MEMBERMAP_LAT_DESC" />
-                <field name="lng" type="text" default="11" filter="float" required="true" readonly="true" label="PLG_CONTENT_MEMBERMAP_LNG_LABEL" description="PLG_CONTENT_MEMBERMAP_LNG_DESC" />
+                <field name="zoom" type="text" default="1" filter="integer" required="true" readonly="true" label="PLG_SYSTEM_MEMBERMAP_ZOOM_LABEL" description="PLG_SYSTEM_MEMBERMAP_ZOOM_DESC" />
+                <field name="lat" type="text" default="42" filter="float" required="true" readonly="true" label="PLG_SYSTEM_MEMBERMAP_LAT_LABEL" description="PLG_SYSTEM_MEMBERMAP_LAT_DESC" />
+                <field name="lng" type="text" default="11" filter="float" required="true" readonly="true" label="PLG_SYSTEM_MEMBERMAP_LNG_LABEL" description="PLG_SYSTEM_MEMBERMAP_LNG_DESC" />
                 <field type="gmap" />
             </fieldset>
             <fieldset name="advanced">
-                <field name="key" type="text" default="" label="PLG_CONTENT_MEMBERMAP_KEY_LABEL" description="PLG_CONTENT_MEMBERMAP_KEY_DESC" />
-                <field name="sensor" type="radio" class="btn-group" default="0" label="PLG_CONTENT_MEMBERMAP_SENSOR_LABEL" description="PLG_CONTENT_MEMBERMAP_SENSOR_DESC">
+                <field name="key" type="text" default="" label="PLG_SYSTEM_MEMBERMAP_KEY_LABEL" description="PLG_SYSTEM_MEMBERMAP_KEY_DESC" />
+                <field name="sensor" type="radio" class="btn-group" default="0" label="PLG_SYSTEM_MEMBERMAP_SENSOR_LABEL" description="PLG_SYSTEM_MEMBERMAP_SENSOR_DESC">
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-                <field name="requests" type="text" default="3" filter="integer" required="true" label="PLG_CONTENT_MEMBERMAP_REQUESTS_LABEL" description="PLG_CONTENT_MEMBERMAP_REQUESTS_DESC" />
+                <field name="requests" type="text" default="3" filter="integer" required="true" label="PLG_SYSTEM_MEMBERMAP_REQUESTS_LABEL" description="PLG_SYSTEM_MEMBERMAP_REQUESTS_DESC" />
             </fieldset>
         </fields>
     </config>

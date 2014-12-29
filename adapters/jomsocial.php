@@ -3,7 +3,7 @@
 /**
  * @author     Branko Wilhelm <branko.wilhelm@gmail.com>
  * @link       http://www.z-index.net
- * @copyright  (c) 2014 Branko Wilhelm
+ * @copyright  (c) 2014 - 2015 Branko Wilhelm
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
@@ -13,7 +13,7 @@ final class MemberMapAdapterJomSocial implements MemberMapAdapterInterface
 {
     protected $params;
 
-    public function __construct(JRegistry &$params)
+    public function __construct(JRegistry $params)
     {
         $this->params = $params;
     }
@@ -21,7 +21,7 @@ final class MemberMapAdapterJomSocial implements MemberMapAdapterInterface
     public function getUsers()
     {
         if (!JComponentHelper::isEnabled('com_community')) {
-            JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_CONTENT_MEMBERMAP_SOURCE_NOT_ENABLED', 'JomSocial'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::sprintf('PLG_SYSTEM_MEMBERMAP_SOURCE_NOT_ENABLED', 'JomSocial'), 'error');
             return false;
         }
 
