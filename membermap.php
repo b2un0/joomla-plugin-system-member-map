@@ -98,7 +98,7 @@ class plgSystemMemberMap extends JPlugin
         $doc->addScript('//maps.googleapis.com/maps/api/js?' . $query);
 
         if ($this->params->get('cluster')) {
-            $doc->addScript('//google-maps-utility-library-v3.googlecode.com/svn/tags/markerclusterer/1.0.2/src/markerclusterer_compiled.js');
+            $doc->addScript('//cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer_compiled.js');
         }
 
         foreach ($users as $user) {
