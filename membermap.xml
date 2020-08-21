@@ -26,7 +26,7 @@
         <filename>membermap.js</filename>
     </media>
     <updateservers>
-        <server type="collection" priority="1" name="z-index development">http://www.z-index.net/en/extensions.xml</server>
+        <server type="extension" priority="1" name="System - Member Map">https://raw.githubusercontent.com/z-index-net/joomla-plugin-system-member-map/master/updatestream.xml</server>
     </updateservers>
     <config>
         <fields name="params" addfieldpath="/plugins/system/membermap/fields/">
